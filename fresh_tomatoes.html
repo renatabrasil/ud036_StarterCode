@@ -1,10 +1,4 @@
-import webbrowser
-import os
-import re
 
-
-# Styles and scripting for the page
-main_page_head = '''
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -84,11 +78,7 @@ main_page_head = '''
         });
     </script>
 </head>
-'''
 
-
-# The main page layout and title bar
-main_page_content = '''
   <body>
     <!-- Trailer Video Modal -->
     <div class="modal" id="trailer">
@@ -114,63 +104,61 @@ main_page_content = '''
       </div>
     </div>
     <div class="container">
-      {movie_tiles}
+      
+<div class="col-md-6 col-lg-4 movie-tile text-center" data-trailer-youtube-id="nZ8KJ4MzzOw" data-toggle="modal" data-target="#trailer">
+    <img src="https://upload.wikimedia.org/wikipedia/pt/thumb/1/1e/Freaky_friday_post.jpg/200px-Freaky_friday_post.jpg" width="220" height="342">
+    <h4>Sexta-Feira Muito Louca</h4>
+    <h5><strong>Lancamento: </strong>2003</h5>
+    <h5><strong>Genero: </strong>Comédia</h5>
+    <h5><strong>Idioma: </strong>Inglês</h5>
+    <h5><strong>Duracao: </strong>97 minutos</h5>
+</div>
+
+<div class="col-md-6 col-lg-4 movie-tile text-center" data-trailer-youtube-id="loTIzXAS7v4" data-toggle="modal" data-target="#trailer">
+    <img src="https://upload.wikimedia.org/wikipedia/pt/thumb/8/85/TheTrumanShow.jpg/245px-TheTrumanShow.jpg" width="220" height="342">
+    <h4>O Show de Truman - O Show da Vida</h4>
+    <h5><strong>Lancamento: </strong>1998</h5>
+    <h5><strong>Genero: </strong>Drama/Comédia</h5>
+    <h5><strong>Idioma: </strong>Inglês</h5>
+    <h5><strong>Duracao: </strong>103 minutos</h5>
+</div>
+
+<div class="col-md-6 col-lg-4 movie-tile text-center" data-trailer-youtube-id="32WeiH4TrIY" data-toggle="modal" data-target="#trailer">
+    <img src="https://upload.wikimedia.org/wikipedia/pt/thumb/b/b2/Cartaz_do_filme_The_Parent_Trap.jpeg/240px-Cartaz_do_filme_The_Parent_Trap.jpeg" width="220" height="342">
+    <h4>Operação Cúpido</h4>
+    <h5><strong>Lancamento: </strong>1998</h5>
+    <h5><strong>Genero: </strong>Comédia</h5>
+    <h5><strong>Idioma: </strong>Inglês</h5>
+    <h5><strong>Duracao: </strong>128 minutos</h5>
+</div>
+
+<div class="col-md-6 col-lg-4 movie-tile text-center" data-trailer-youtube-id="fPc9D5eLLig" data-toggle="modal" data-target="#trailer">
+    <img src="https://upload.wikimedia.org/wikipedia/pt/thumb/0/0b/Medianeras.jpg/200px-Medianeras.jpg" width="220" height="342">
+    <h4>Medianeras: Buenos Aires da Era do Amor Virtual</h4>
+    <h5><strong>Lancamento: </strong>2011</h5>
+    <h5><strong>Genero: </strong>Drama</h5>
+    <h5><strong>Idioma: </strong>Espanhol</h5>
+    <h5><strong>Duracao: </strong>95 minutos</h5>
+</div>
+
+<div class="col-md-6 col-lg-4 movie-tile text-center" data-trailer-youtube-id="PBtnPuB0x3U" data-toggle="modal" data-target="#trailer">
+    <img src="https://upload.wikimedia.org/wikipedia/en/thumb/a/a6/Abre_los_ojos_movie.jpg/220px-Abre_los_ojos_movie.jpg" width="220" height="342">
+    <h4>Preso na Escuridão</h4>
+    <h5><strong>Lancamento: </strong>1997</h5>
+    <h5><strong>Genero: </strong>Drama</h5>
+    <h5><strong>Idioma: </strong>Espanhol</h5>
+    <h5><strong>Duracao: </strong>117 minutos</h5>
+</div>
+
+<div class="col-md-6 col-lg-4 movie-tile text-center" data-trailer-youtube-id="zCy5WQ9S4c0" data-toggle="modal" data-target="#trailer">
+    <img src="https://upload.wikimedia.org/wikipedia/pt/thumb/2/22/Titanic_poster.jpg/250px-Titanic_poster.jpg" width="220" height="342">
+    <h4>Titanic</h4>
+    <h5><strong>Lancamento: </strong>1997</h5>
+    <h5><strong>Genero: </strong>Romance</h5>
+    <h5><strong>Idioma: </strong>Inglês</h5>
+    <h5><strong>Duracao: </strong>194 minutos</h5>
+</div>
+
     </div>
   </body>
 </html>
-'''
-
-
-# A single movie entry html template
-movie_tile_content = '''
-<div class="col-md-6 col-lg-4 movie-tile text-center" data-trailer-youtube-id="{trailer_youtube_id}" data-toggle="modal" data-target="#trailer">
-    <img src="{poster_image_url}" width="220" height="342">
-    <h4>{movie_title}</h4>
-    <h5><strong>Lancamento: </strong>{movie_year}</h5>
-    <h5><strong>Genero: </strong>{movie_genre}</h5>
-    <h5><strong>Idioma: </strong>{movie_language}</h5>
-    <h5><strong>Duracao: </strong>{movie_duration} minutos</h5>
-</div>
-'''
-
-
-def create_movie_tiles_content(movies):
-    # The HTML content for this section of the page
-    content = ''
-    for movie in movies:
-        # Extract the youtube ID from the url
-        youtube_id_match = re.search(
-            r'(?<=v=)[^&#]+', movie.trailer_youtube_url)
-        youtube_id_match = youtube_id_match or re.search(
-            r'(?<=be/)[^&#]+', movie.trailer_youtube_url)
-        trailer_youtube_id = (youtube_id_match.group(0) if youtube_id_match
-                              else None)
-
-        # Append the tile for the movie with its content filled in
-        content += movie_tile_content.format(
-            movie_title=movie.title,
-            poster_image_url=movie.poster_image_url,
-            trailer_youtube_id=trailer_youtube_id,
-            movie_duration=movie.duration,
-            movie_genre=movie.genre,
-            movie_language=movie.language,
-            movie_year=movie.year
-        )
-    return content
-
-
-def open_movies_page(movies):
-    # Create or overwrite the output file
-    output_file = open('fresh_tomatoes.html', 'w')
-
-    # Replace the movie tiles placeholder generated content
-    rendered_content = main_page_content.format(
-        movie_tiles=create_movie_tiles_content(movies))
-
-    # Output the file
-    output_file.write(main_page_head + rendered_content)
-    output_file.close()
-
-    # open the output file in the browser (in a new tab, if possible)
-    url = os.path.abspath(output_file.name)
-    webbrowser.open('file://' + url, new=2)
